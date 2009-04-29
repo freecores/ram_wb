@@ -1,9 +1,9 @@
 // True dual port RAM as found in ACTEL proasic3 devices
 module ram_sc_dw (d_a, q_a, adr_a, we_a, q_b, adr_b, d_b, we_b, clk);
    
-   parameter dat_width = 32;
-   parameter adr_width = 11;
-   parameter mem_size  = 2048;
+   parameter dat_width = `RAM_WB_DAT_WIDTH;
+   parameter adr_width = `RAM_WB_ADR_WIDTH;
+   parameter mem_size  = `RAM_WB_MEM_SIZE;
    
    input [dat_width-1:0]      d_a;
    input [adr_width-1:0]      adr_a;
@@ -15,14 +15,15 @@ module ram_sc_dw (d_a, q_a, adr_a, we_a, q_b, adr_b, d_b, we_b, clk);
    input 		      we_b;
    input 		      clk;   
 
-   reg [dat_width-1:0] 	      ram [0:mem_size - 1] ;
+   reg [dat_width-1:0] ram [0:mem_size - 1] /*synthesis syn_ramstyle = "no_rw_check"*/;
    
    always @ (posedge clk)
      begin 
 	q_a <= ram[adr_a];
 	if (we_a)
 	  ram[adr_a] <= d_a;
-     end 
+     end
+   
    always @ (posedge clk)
      begin 
 	q_b <= ram[adr_b];
@@ -31,38 +32,3 @@ module ram_sc_dw (d_a, q_a, adr_a, we_a, q_b, adr_b, d_b, we_b, clk);
      end
    
 endmodule 
-
-// wrapper for the above dual port RAM
-module ram (dat_i, dat_o, adr_i, we_i, clk );
-
-   parameter dat_width = 32;
-   parameter adr_width = 11;
-   parameter mem_size  = 2048;
-   
-   input [dat_width-1:0]      dat_i;
-   input [adr_width-1:0]      adr_i;
-   input 		      we_i;
-   output [dat_width-1:0]     dat_o;
-   input 		      clk;   
-   
-   ram_sc_dw
-     #
-     (
-      .dat_width(dat_width),
-      .adr_width(adr_width),
-      .mem_size(mem_size)
-      )
-     ram0
-     (
-      .d_a(dat_i),
-      .q_a(),
-      .adr_a(adr_i),
-      .we_a(we_i),
-      .q_b(dat_o),
-      .adr_b(adr_i),
-      .d_b({dat_width{1'b0}}),
-      .we_b(1'b0),
-      .clk(clk)
-      );
-
-endmodule // ram
