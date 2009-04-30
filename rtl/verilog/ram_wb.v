@@ -31,9 +31,9 @@ module ram_wb ( dat_i, dat_o, adr_i, we_i, sel_i, cyc_i, stb_i, ack_o, cti_i, cl
    ram
      #
      (
-      .DATA_WIDTH(dat_width),
-      .ADDR_WIDTH(adr_width),
-      .MEM_SIZE(mem_size)
+      .dat_width(dat_width),
+      .adr_width(adr_width),
+      .mem_size(mem_size)
       )
      ram0
      (
